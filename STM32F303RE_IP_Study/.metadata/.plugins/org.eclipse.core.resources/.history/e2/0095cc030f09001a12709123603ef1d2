@@ -1,0 +1,126 @@
+#include "stm32f3xx.h"
+
+void GPIO_Init();
+void UART_Init(uint32_t BaudRate);
+void Uart_Init2();
+
+int main(void)
+{
+	uint8_t buf = 'a';
+
+	GPIO_Init();
+	//UART_Init(115200U);
+	Uart_Init2();
+
+	while (1)
+	{
+		if((USART2->ISR & USART_ISR_RXNE) > 0)
+		{
+			USART2->TDR = USART2->RDR;
+			while((USART2->ISR & USART_ISR_TXE) == 0);
+		}
+	}
+
+	return 0;
+}
+
+typedef enum
+{
+	AFPIN0 = 0,
+	AFPIN1 = 4,
+	AFPIN2 = 8,
+	AFPIN3 = 12,
+	AFPIN4 = 16,
+	AFPIN5 = 20,
+	AFPIN6 = 24,
+	AFPIN7 = 28,
+} AFRL;
+void GPIO_Init()
+{
+	/* GPIOA Clock Enable */
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+
+	/* Select Alternate Function Mode */
+	GPIOA->MODER |= (GPIO_MODER_MODER2_1 | GPIO_MODER_MODER3_1);
+
+	/* AF7(USART2 RX/TX), GPIO0~7: AFRL - 4bit Field */
+	GPIOA->AFR[0] |= ((0x07U << AFPIN2) | (0x07U << AFPIN3));
+}
+
+void UART_Init(uint32_t BaudRate)
+{
+	uint32_t clock_speed = 0U;
+	uint32_t USARTDIV = 0U;
+
+	/* Enable USART2 */
+	RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+
+	/* Select USART2 Source Clock */
+	RCC->CFGR3 &= ~RCC_CFGR3_USART2SW;
+	RCC->CFGR3 |= RCC_CFGR3_USART2SW_HSI;
+
+	/* Select Oversampling Mode (Clear: x16 / Set: x8) */
+	USART2->CR1 |= USART_CR1_OVER8;
+
+	/* TX/RX Enable */
+	USART2->CR1 |= (USART_CR1_TE | USART_CR1_RE);
+
+	/* Set Baud Rate */
+	if((RCC->CFGR3 & RCC_CFGR3_USART2SW_HSI) > 0U)
+	{
+		clock_speed = 8000000U;
+	}
+	else if((RCC->CFGR3 & RCC_CFGR3_USART2SW_SYSCLK) > 0U)
+	{
+
+	}
+	else if((RCC->CFGR3 & RCC_CFGR3_USART2SW_PCLK) > 0U)
+	{
+
+	}
+	else if((RCC->CFGR3 & RCC_CFGR3_USART2SW_LSE) > 0U)
+	{
+
+	}
+	else
+	{
+		/* Unknown.... */
+	}
+
+	/* Calculate & Set BRR */
+	if((USART2->CR1 & USART_CR1_OVER8) != 1U)
+	{
+		/* Oversampling x16  */
+		USARTDIV = clock_speed / BaudRate;
+		USART2->BRR = (USARTDIV << 4U) | USARTDIV;
+	}
+	else
+	{
+		/* Oversampling x8  */
+		USARTDIV = (2U * clock_speed) / BaudRate;
+		USART2->BRR = (USARTDIV << 4U) | (USARTDIV >> 1U);
+	}
+
+	/* USART2 Enable */
+	USART2->CR1 |= USART_CR1_UE;
+}
+
+void Uart_Init2() {
+	RCC->CFGR3 &= ~RCC_CFGR3_USART2SW;
+	RCC->CFGR3 |= RCC_CFGR3_USART2SW_HSI;
+
+	// USART2 Clock Enable.
+	RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
+
+
+
+	// UART Tx, Rx Enable.
+	USART2->CR1 |= USART_CR1_TE | USART_CR1_RE;
+
+	// BaudRate Setting.
+	// BRR = (((CLOCK) + ((__BAUD__)/2U)) / (__BAUD__))
+	USART2->BRR = (8000000 + (115200 / 2U)) / 115200;
+
+	// USART Enable
+	USART2->CR1 |= USART_CR1_UE;
+}

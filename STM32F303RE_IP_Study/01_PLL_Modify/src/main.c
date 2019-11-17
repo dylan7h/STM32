@@ -1,0 +1,74 @@
+#include "stm32f3xx.h"
+
+void Init_MCO_GPIO();
+void PLL_Modify();
+void Enable_MCO();
+
+int main(void)
+{
+	Init_MCO_GPIO();
+	PLL_Modify();
+	Enable_MCO();
+
+	while (1)
+	{
+
+	}
+
+	return 0;
+}
+
+void Init_MCO_GPIO()
+{
+	/* GPIOA Clock Enable */
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+
+	/* Enable GPIO Alternate Function */
+	// 1. Set GPIO to Alternate Function Mode
+	GPIOA->MODER &= ~GPIO_MODER_MODER8;
+	GPIOA->MODER |= GPIO_MODER_MODER8_1;
+
+	// 2. Set GPIO Output Type to Push Pull
+	GPIOA->OTYPER &= ~GPIO_OTYPER_OT_8;
+
+	// 3. Set GPIO Output Speed to High
+	GPIOA->OSPEEDR &= ~GPIO_OSPEEDER_OSPEEDR8;
+	GPIOA->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR8;
+
+	// 4. Set GPIO to No Pull-up/down
+	GPIOA->PUPDR &= ~GPIO_PUPDR_PUPDR8;
+
+	// 5. Select Alternate Function Table.
+	GPIOA->AFR[1] &= ~GPIO_AFRH_AFRH0;
+}
+
+void PLL_Modify()
+{
+	// 1. Disable the PLL by setting PLLON to 0.
+	RCC->CR &= RCC_CR_PLLON;
+
+	// 2. Wait until PLLRDY is cleared. The PLL is now fully stopped.
+	while((RCC->CR & RCC_CR_PLLRDY) != 0);
+
+	// 3. Change the desired parameter.
+	/* PLL entry clock source(HSI used as PREDIV1 entry) */
+	RCC->CFGR &= ~RCC_CFGR_PLLSRC;
+	//RCC->CFGR |= RCC_CFGR_PLLSRC_HSI_PREDIV;
+
+	/* PLL multiplication factor(x2/3/4/5/6/7/8/9/10/11/12/13/14/15/16) */
+	RCC->CFGR &= ~RCC_CFGR_PLLMUL;
+	RCC->CFGR |= RCC_CFGR_PLLMUL2;
+
+	// 4. Enable the PLL again by setting PLLON to 1.
+	RCC->CR |= RCC_CR_PLLON;
+}
+
+void Enable_MCO()
+{
+	/* PLLNODIV */
+	RCC->CFGR |= RCC_CFGR_PLLNODIV;
+
+	/* Select MCO Output Clock - PLL Clock */
+	RCC->CFGR &= ~RCC_CFGR_MCO_PLL;
+	RCC->CFGR |= RCC_CFGR_MCO_PLL;
+}
