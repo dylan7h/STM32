@@ -1,0 +1,32 @@
+#include "stm32f3xx.h"
+#include "uart.h"
+
+void BasicTimerInit();
+
+int main(void)
+{
+	uint8_t buf = 0;
+
+	GPIO_Init();
+	UART_Init(115200U);
+
+	while (1)
+	{
+		buf = ReadByte();
+		WriteByte(buf);
+	}
+
+	return 0;
+}
+
+void BasicTimerInit()
+{
+	/* TIM6 Clock Enable. */
+	RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
+
+	/* TIM6 Counter Disable */
+	TIM6->CR1 &= ~TIM_CR1_CEN;
+
+	/* TIM6 Counter Enable */
+	TIM6->CR1 |= TIM_CR1_CEN;
+}

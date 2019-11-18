@@ -1,0 +1,21 @@
+/*
+ * uart.c
+ *
+ *  Created on: 2019. 11. 18.
+ *      Author: kazam
+ */
+
+#include "uart.h"
+#include "stm32f3xx.h"
+
+typedef enum
+{
+	AFPIN0 = 0,
+	AFPIN1 = 4,
+	AFPIN2 = 8,
+	AFPIN3 = 12,
+	AFPIN4 = 16,
+	AFPIN5 = 20,
+	AFPIN6 = 24,
+	AFPIN7 = 28,
+} AFRL;

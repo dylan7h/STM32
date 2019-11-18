@@ -1,103 +1,56 @@
 #include "stm32f3xx.h"
+#include "uart.h"
 
-void GPIO_Init();
-void UART_Init(uint32_t BaudRate);
+uint8_t flag = 0;
+
+void BasicTimerInit();
 
 int main(void)
 {
+	uint8_t buf = 'A';
+
 	GPIO_Init();
 	UART_Init(115200U);
 
+	BasicTimerInit();
+
 	while (1)
 	{
-		if((USART2->ISR & USART_ISR_RXNE) > 0)
+		if(TIM7->SR & TIM_SR_UIF)
 		{
-			USART2->TDR = USART2->RDR;
-			while((USART2->ISR & USART_ISR_TXE) == 0);
+			/* Clear Flag Bit */
+			TIM7->SR &= ~TIM_SR_UIF;
+
+			WriteByte(buf);
 		}
 	}
 
 	return 0;
 }
 
-typedef enum
+void BasicTimerInit()
 {
-	AFPIN0 = 0,
-	AFPIN1 = 4,
-	AFPIN2 = 8,
-	AFPIN3 = 12,
-	AFPIN4 = 16,
-	AFPIN5 = 20,
-	AFPIN6 = 24,
-	AFPIN7 = 28,
-} AFRL;
-void GPIO_Init()
-{
-	/* GPIOA Clock Enable */
-	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+	/* TIM6 Clock Enable. */
+	RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
 
-	/* Select Alternate Function Mode */
-	GPIOA->MODER |= (GPIO_MODER_MODER2_1 | GPIO_MODER_MODER3_1);
+	/* TIM6 Counter Disable */
+	TIM7->CR1 &= ~TIM_CR1_CEN;
 
-	/* AF7(USART2 RX/TX), GPIO0~7: AFRL - 4bit Field */
-	GPIOA->AFR[0] |= ((0x07U << AFPIN2) | (0x07U << AFPIN3));
+	/*
+	 * Target Period
+	 * 1 Second.
+	 * Clock: 8,000,000[Hz]
+	 * PSC: 8000 - 1
+	 * ARR: 1000 - 1
+	 */
+
+	/* Set prescaler */
+	TIM7->PSC = 8000 - 1;
+
+	/* Set Auto-Reload Register */
+	TIM7->ARR = 1000 - 1;
+
+	/* TIM6 Counter Enable */
+	TIM7->CR1 |= TIM_CR1_CEN;
 }
 
-void UART_Init(uint32_t BaudRate)
-{
-	uint32_t clock_speed = 0U;
-	uint32_t USARTDIV = 0U;
-
-	/* Select USART2 Source Clock */
-	RCC->CFGR3 &= ~RCC_CFGR3_USART2SW;
-	RCC->CFGR3 |= RCC_CFGR3_USART2SW_HSI;
-
-	/* Enable USART2 */
-	RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
-
-	/* Select Oversampling Mode (Clear: x16 / Set: x8) */
-	USART2->CR1 &= ~USART_CR1_OVER8;
-
-	/* TX/RX Enable */
-	USART2->CR1 |= (USART_CR1_TE | USART_CR1_RE);
-
-	/* Set Baud Rate */
-	if((RCC->CFGR3 & RCC_CFGR3_USART2SW_HSI) > 0U)
-	{
-		clock_speed = 8000000U;
-	}
-	else if((RCC->CFGR3 & RCC_CFGR3_USART2SW_SYSCLK) > 0U)
-	{
-
-	}
-	else if((RCC->CFGR3 & RCC_CFGR3_USART2SW_PCLK) > 0U)
-	{
-
-	}
-	else if((RCC->CFGR3 & RCC_CFGR3_USART2SW_LSE) > 0U)
-	{
-
-	}
-	else
-	{
-		/* Unknown.... */
-	}
-
-	/* Calculate & Set BRR */
-	if((USART2->CR1 & USART_CR1_OVER8) == 0U)
-	{
-		/* Oversampling x16  */
-		USARTDIV = clock_speed / BaudRate;
-		USART2->BRR = USARTDIV;
-	}
-	else
-	{
-		/* Oversampling x8  */
-		USARTDIV = (2U * clock_speed) / BaudRate;
-		USART2->BRR = ((USARTDIV & 0xFFF0U) | ((USARTDIV & 0x000FU) >> 1));
-	}
-
-
-	/* USART2 Enable */
-	USART2->CR1 |= USART_CR1_UE;
-}
