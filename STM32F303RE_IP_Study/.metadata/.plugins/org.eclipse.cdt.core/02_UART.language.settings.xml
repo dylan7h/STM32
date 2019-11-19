@@ -28,9 +28,6 @@
 					<entry kind="macro" name="__ACCUM_MIN__" value="(-0X1P15K-0X1P15K)">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
-					<entry kind="macro" name="__APCS_32__" value="1">
-						<flag value="BUILTIN|READONLY"/>
-					</entry>
 					<entry kind="macro" name="__ARMEL__" value="1">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
@@ -130,7 +127,7 @@
 					<entry kind="macro" name="__CHAR_BIT__" value="8">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
-					<entry kind="macro" name="__CHAR_UNSIGNED__" value="1">
+					<entry kind="macro" name="__CHAR_UNSIGNED__" value="8">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__DA_FBIT__" value="31">
@@ -244,6 +241,9 @@
 					<entry kind="macro" name="__DEC64_SUBNORMAL_MIN__" value="0.000000000000001E-383DD">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
+					<entry kind="macro" name="__DEC64_SUBNORMAL_MIN__" value="0XFFFFFFFFP-16UK">
+						<flag value="BUILTIN|READONLY"/>
+					</entry>
 					<entry kind="macro" name="__DECIMAL_DIG__" value="17">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
@@ -317,6 +317,9 @@
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__FRACT_EPSILON__" value="0x1P-15R">
+						<flag value="BUILTIN|READONLY"/>
+					</entry>
+					<entry kind="macro" name="__FRACT_EPSILON__" value="0x1P-32ULLK">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__FRACT_FBIT__" value="15">
@@ -580,6 +583,9 @@
 					<entry kind="macro" name="__LFRACT_MIN__" value="(-0.5LR-0.5LR)">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
+					<entry kind="macro" name="__LFRACT_MIN__" value="0">
+						<flag value="BUILTIN|READONLY"/>
+					</entry>
 					<entry kind="macro" name="__LLACCUM_EPSILON__" value="0x1P-31LLK">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
@@ -635,12 +641,6 @@
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__PTRDIFF_TYPE__" value="int">
-						<flag value="BUILTIN|READONLY"/>
-					</entry>
-					<entry kind="macro" name="__QQ_FBIT__" value="7">
-						<flag value="BUILTIN|READONLY"/>
-					</entry>
-					<entry kind="macro" name="__QQ_IBIT__" value="0">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__REGISTER_PREFIX__" value="">
@@ -775,9 +775,6 @@
 					<entry kind="macro" name="__TQ_FBIT__" value="127">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
-					<entry kind="macro" name="__TQ_IBIT__" value="0">
-						<flag value="BUILTIN|READONLY"/>
-					</entry>
 					<entry kind="macro" name="__UACCUM_EPSILON__" value="0x1P-16UK">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
@@ -785,9 +782,6 @@
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__UACCUM_IBIT__" value="16">
-						<flag value="BUILTIN|READONLY"/>
-					</entry>
-					<entry kind="macro" name="__UACCUM_MAX__" value="0XFFFFFFFFP-16UK">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__UACCUM_MIN__" value="0.0UK">
@@ -811,6 +805,9 @@
 					<entry kind="macro" name="__UFRACT_FBIT__" value="16">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
+					<entry kind="macro" name="__UFRACT_FBIT__" value="7">
+						<flag value="BUILTIN|READONLY"/>
+					</entry>
 					<entry kind="macro" name="__UFRACT_IBIT__" value="0">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
@@ -821,9 +818,6 @@
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__UHA_FBIT__" value="8">
-						<flag value="BUILTIN|READONLY"/>
-					</entry>
-					<entry kind="macro" name="__UHA_IBIT__" value="8">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__UHQ_FBIT__" value="16">
@@ -961,9 +955,6 @@
 					<entry kind="macro" name="__ULFRACT_MIN__" value="0.0ULR">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
-					<entry kind="macro" name="__ULLACCUM_EPSILON__" value="0x1P-32ULLK">
-						<flag value="BUILTIN|READONLY"/>
-					</entry>
 					<entry kind="macro" name="__ULLACCUM_FBIT__" value="32">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
@@ -991,6 +982,9 @@
 					<entry kind="macro" name="__ULLFRACT_MIN__" value="0.0ULLR">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
+					<entry kind="macro" name="__ULLFRACT_MIN__" value="8">
+						<flag value="BUILTIN|READONLY"/>
+					</entry>
 					<entry kind="macro" name="__UQQ_FBIT__" value="8">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
@@ -998,6 +992,9 @@
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__USACCUM_EPSILON__" value="0x1P-8UHK">
+						<flag value="BUILTIN|READONLY"/>
+					</entry>
+					<entry kind="macro" name="__USACCUM_EPSILON__" value="1">
 						<flag value="BUILTIN|READONLY"/>
 					</entry>
 					<entry kind="macro" name="__USACCUM_FBIT__" value="8">
