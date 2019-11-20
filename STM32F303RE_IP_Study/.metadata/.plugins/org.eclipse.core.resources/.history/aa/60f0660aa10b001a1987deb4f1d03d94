@@ -1,0 +1,62 @@
+#include "stm32f3xx.h"
+
+void LED_Init();
+void Button_Init();
+void EXTI_INT_Enable();
+
+int main(void)
+{
+	while(1)
+	{
+		GPIOA->ODR |= GPIO_ODR_5;
+
+		GPIOA->BRR |= GPIO_BRR_BR_5;
+	}
+
+	return 0;
+}
+
+void LED_Init()
+{
+	RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+	GPIOA->MODER |= GPIO_MODER_MODER5_0;
+}
+
+void Button_Init()
+{
+	RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
+	GPIOC->MODER &= ~GPIO_MODER_MODER13;
+
+	SYSCFG->EXTICR[3] |= SYSCFG_EXTICR4_EXTI13_PC;
+
+	/* Rising trigger selection register */
+	EXTI->RTSR |= EXTI_RTSR_TR13;
+	/* Falling trigger selection register */
+	//EXTI->RTSR |= EXTI_FTSR_TR13;
+
+	/* Clear Pending Bit */
+	EXTI->PR |= EXTI_PR_PR13;
+
+	void EXTI_INT_Enable();
+}
+
+void EXTI_INT_Enable()
+{
+	uint32_t priorityGroup;
+	uint32_t PreemptPriority = 0;
+	uint32_t SubPriority = 0;
+	uint32_t priority;
+
+	priorityGroup = NVIC_GetPriorityGrouping();
+	priority =  NVIC_EncodePriority(priorityGroup, PreemptPriority, SubPriority);
+
+	NVIC_SetPriority(EXTI3_IRQn, priority);
+
+	NVIC_EnableIRQ(EXTI3_IRQn);
+}
+
+void EXTI15_10_IRQHandler()
+{
+	static int flag = 0;
+	GPIOA->ODR |= GPIO_ODR_5;
+}
